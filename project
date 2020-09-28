@@ -1,0 +1,399 @@
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+struct Homework {
+	string Name;
+	string Teoria;
+	string Ex;
+	string answer;
+};
+class people {
+	string password, login, FIO;
+public:
+	people(string _password, string _login, string _FIO) : password(_password), login(_login), FIO(_FIO) {};
+	string getFIO() //Возвращает ФИО человека;
+	{
+		return FIO;
+	}
+	string getlog() //Возвращает логин от профиля человека;
+	{
+		return login;
+	}
+	string getpas() //Возвращает пароль от профиля человека;
+	{
+		return password;
+	}
+};
+class student : people
+{
+	vector <int> marks;
+	vector <Homework> Dz;
+public:
+	student(string _password, string _login, string _FIO, vector <int> _marks, vector <Homework> _Dz) : people(_password, _login, _FIO), marks(_marks), Dz(_Dz) {}
+	string GetFIO() //Возвращает ФИО обучающегося;
+	{
+		return getFIO();
+	}
+	string Getlog() //Возвращает логин обучающегося;
+	{
+		return getlog();
+	}
+	string Getpas() //Возвращает пароль обучающегося;
+	{
+		return getpas();
+	}
+	vector <Homework> GetDZ() //Возвращает вектор с выданными ученику домашними заданиями;
+	{
+		return Dz;
+	}
+	void addMarks(int x) //Добавляет новые оценки в конец соответствующего вектора;
+	{
+		marks.push_back(x);
+	}
+	void addDZ(Homework x) //Добавляет информацию о новом задании;
+	{
+		Dz.push_back(x);
+	}
+	void showMar() //Выводит оценки ученика и показывает его средний балл;
+	{
+		int S = 0;
+		if (marks.size() == 0) cout << "Оценок нет" << endl << endl;
+		else {
+			for (int i = 0; i < marks.size(); i++)
+			{
+				cout << marks[i] << " ";
+				S += marks[i];
+			}
+			cout << "   Средний балл: " << S / marks.size() << ";" << endl;
+		}
+		
+	}
+	void delDZ(int i) //Удаляет выполненное домашнее задание, по его номеру;
+	{
+		auto iter = Dz.cbegin();
+		Dz.erase(iter + i);
+	}
+};
+class Teacher : people
+{
+	vector <student*> arr;
+public:
+	Teacher(string _password, string _login, string _FIO, vector <student*> _Class): people(_password, _login, _FIO), arr(_Class) {}
+	string GetFIO() //Возвращает ФИО преподавателя;
+	{
+		return getFIO(); 
+	}
+	string Getlog() //Возвращает логин преподавателя;
+	{
+		return getlog();
+	}
+	string Getpas() //Возвращает пароль преподавателя;
+	{
+		return getpas();
+	}
+	vector <student*> getclass() //Возвращается список учащихся, закрепленных за преподавателем;
+	{
+		return arr;
+	}
+	void change_Class(student* x) //Закрепляет нового ученика за преподавателем;
+	{
+		arr.push_back(x);
+	}
+};
+struct school
+{
+	vector <student*> St;
+	vector <Teacher> Th;
+};
+
+int main()
+{
+	setlocale(LC_ALL, "Russian"); //Для русскоязычного вывода в visual studio
+	string _password, _login, _FIO, enter, answer;
+	vector <int> marks = {};
+	vector <Homework> DZ = {};
+	Homework Hw;
+	school RAU; //Тут будет храниться информация о новых учителях и учениках
+	int a, ID = 0, j, S = 0;
+	vector <student*> _Class;
+	int q = -1;
+	cout << endl << "           WELCOME!";
+	while (q != 0)
+	{
+		cout << endl << "__________________________________" << endl << endl;
+		cout << "0 -- Завершить работу;" << endl;
+		cout << "1 -- Войти в систему;" << endl;
+		cout << "2 -- Зарегистрировать нового пользователя;" << endl;
+		cout << "Выберите одну из функций: ";
+		cin >> q;
+		cin.ignore(32767, '\n');
+		cout << endl << "__________________________________" << endl << endl;
+		switch (q)
+		{
+		case 0:
+		{
+			cout << "До свидания!" << endl << endl;
+		} break;
+		case 1:
+		{
+			cout << "1 -- я учитель;" << endl;
+			cout << "2 -- я ученик;" << endl;
+			cout << "Выберите одну из функций: ";
+			int o;
+			cin >> o;
+			cin.ignore(32767, '\n');
+			cout << endl << endl << "Введите логин: ";
+			getline(cin, _login);
+			cout << endl << "Введите пароль: ";
+			getline(cin, _password);
+			switch (o)
+			{
+			case 1:
+			{
+				int y = 0;
+				while (y == 0)
+				{
+					for (int i = 0; i < RAU.Th.size(); i++)
+					{
+						if ((RAU.Th[i].Getlog() == _login) && (RAU.Th[i].Getpas() == _password))
+						{
+							y++;
+							ID = i;
+							i = RAU.Th.size();
+						}
+					}
+					if (y == 0)
+					{
+						cout << endl << "Такого пользователя не найдено. Повторите ввод данных!" << endl;
+						cout << "Хотите повторить попытку ввода данных?" << endl;
+						cout << "1 -- Да;" << endl;
+						cout << "2 -- Нет;" << endl;
+						cin >> y;
+						if (y == 1) {
+							cout << endl << endl << "Введите логин: ";
+							getline(cin, _login);
+							cout << endl << "Введите пароль: ";
+							getline(cin, _password);
+							y = 0;
+						}
+					}
+				}
+				if (y != 2) {
+					cout << "___________________________________________" << endl << endl;
+					cout << "Добрый день, " << RAU.Th[ID].GetFIO() << "!" << endl << endl;
+					int w = -1;
+					while (w != 0)
+					{
+						cout << "1 -- получить ведомость с оценками моих учеников;" << endl;
+						cout << "2 -- выдать индивидуальное задание ученику;" << endl;
+						cout << "3 -- выдать задание всем ученикам;" << endl;
+						cout << "0 -- выйти из системы." << endl;
+						cout << "Выберите действие: ";
+						cin >> w;
+						cin.ignore(32767, '\n');
+						switch (w)
+						{
+						case 1:
+						{
+							for (int i = 0; i < RAU.Th[ID].getclass().size(); i++)
+							{
+								cout << endl << " Оценочный лист " << RAU.Th[ID].getclass()[i]->GetFIO() << ": ";
+								RAU.Th[ID].getclass()[i]->showMar();
+							}
+						} break;
+						case 2:
+						{
+							for (int i = 0; i < RAU.Th[ID].getclass().size(); i++)
+							{
+								cout << i << " -- " << RAU.Th[ID].getclass()[i]->GetFIO() << ";" << endl;
+							}
+							cout << "Введите номер ученика, которому Вы хотите создать работу: ";
+							cin >> j;
+							cin.ignore(32767, '\n');
+							cout << endl << "Введите заголовок домашней работы: ";
+							getline(cin, Hw.Name);
+							cout << "Введите теоретическую часть задания: ";
+							getline(cin, Hw.Teoria);
+							cout << "Введите условие задания: ";
+							getline(cin, Hw.Ex);
+							cout << "Введите ответ на задание: ";
+							getline(cin, Hw.answer);
+							RAU.Th[ID].getclass()[j]->addDZ(Hw);
+						} break;
+						case 3:
+						{
+							cout << endl << "Введите заголовок домашней работы: ";
+							getline(cin, Hw.Name);
+							cout << "Введите теоретическую часть задания: ";
+							getline(cin, Hw.Teoria);
+							cout << "Введите условие задания: ";
+							getline(cin, Hw.Ex);
+							cout << "Введите ответ на задание: ";
+							getline(cin, Hw.answer);
+							for (int i = 0; i < RAU.Th[ID].getclass().size(); i++)
+							{
+								RAU.Th[ID].getclass()[i]->addDZ(Hw);
+							}
+						} break;
+						case 0:
+						{
+							cout << endl << "__________________________________________" << endl;
+							cout << endl << "До скорой встречи, " << RAU.Th[ID].GetFIO() << endl;
+						} break;
+						}
+					}
+				}
+			} break;
+			case 2:
+			{
+				int y = 0;
+				while (y == 0)
+				{
+					for (int i = 0; i < RAU.St.size(); i++)
+					{
+						if ((RAU.St[i]->Getlog() == _login) && (RAU.St[i]->Getpas() == _password))
+						{
+							y++;
+							ID = i;
+							i = RAU.St.size();
+						}
+					}
+					if (y == 0)
+					{
+						cout
+							<< endl << "Такого пользователя не найдено. Повторите ввод данных!";
+						cout << endl << endl << "Введите логин: ";
+						getline(cin, _login);
+						cout << endl << "Введите пароль: ";
+						getline(cin, _password);
+					}
+				}
+				cout << endl << "Добрый день, " << RAU.St[ID]->GetFIO() << "!" << endl;
+				int w = -1;
+				while (w != 0)
+				{
+					cout << "1 -- Получить ведомость с моими оценками;" << endl;
+					cout << "2 -- Посмотреть кол-во невыполненных заданий;" << endl;
+					cout << "3 -- Выполнить домашнюю работу;" << endl;
+					cout << "0 -- выйти из системы." << endl;
+					cout << "Выберите действие: ";
+					cin >> w;
+					switch (w)
+					{
+					case 1:
+					{
+						cout << endl << " Оценочный лист: ";
+						RAU.St[ID]->showMar();
+					} break;
+					case 2:
+					{
+						cout << endl << "Кол-во невыполненных заданий: " << RAU.St[ID]->GetDZ().size() << ";" << endl << endl;
+					} break;
+					case 3:
+					{
+						if (RAU.St[ID]->GetDZ().size() == 0) cout << "Домашних заданий нет!" << endl << endl;
+						else {
+							for (int i = 0; i < RAU.St[ID]->GetDZ().size(); i++)
+							{
+								cout << i << " -- " << RAU.St[ID]->GetDZ()[i].Name << ";" << endl;
+							}
+							cout << "Введите номер задания которое Вы хотите выполнить: ";
+							cin >> j;
+							cin.ignore(32767, '\n');
+							cout << "Внимательно прочтите теоретическую часть!" << endl << endl << RAU.St[ID]->GetDZ()[j].Teoria;
+							cout << endl << endl << "После ознакомления нажмите ENTER" << endl;
+							getline(cin, enter);
+							cout << "Внимательно прочтите условие задачи по пройденному материалу и введитcе свой ответ!";
+							cout << endl << RAU.St[ID]->GetDZ()[j].Ex << endl << endl << "Ответ: ";
+							getline(cin, answer);
+							int m = 5;
+							if (answer == RAU.St[ID]->GetDZ()[j].answer)
+							{
+								cout << endl << "Ответ верный!";
+								RAU.St[ID]->addMarks(5);
+								RAU.St[ID]->delDZ(j);
+							}
+							else
+							{
+								while (answer != RAU.St[ID]->GetDZ()[j].answer && m > 1)
+								{
+									m--;
+									cout << "Вы ошиблись попробуйте ещё раз! Ответ: ";
+									getline(cin, answer);
+								}
+								if (m > 1)
+								{
+									cout << endl << "Ответ верный!";
+									RAU.St[ID]->addMarks(m);
+									RAU.St[ID]->delDZ(j);
+								}
+								else {
+									cout << endl << "Вы ошиблись! Попыток больше нет." << endl << "Правильный ответ: " << RAU.St[ID]->GetDZ()[j].answer;
+									RAU.St[ID]->addMarks(m);
+									RAU.St[ID]->delDZ(j);
+								}
+							}
+						}
+					} break;
+					case 0:
+					{
+						cout << endl << "__________________________________________" << endl;
+						cout << endl << "До скорой встречи, " << RAU.St[ID]->GetFIO() << endl;
+					} break;
+					}
+				}
+			} break;
+			}
+		} break;
+		case 2:
+		{
+			cout << "1 -- Создать учителя;" << endl;
+			cout << "2 -- Создать ученика;" << endl;
+			cout << "Выберите одну из функций: ";
+			int o;
+			cin >> o;
+			if (o == 2 && RAU.Th.size() == 0)
+			{
+				cout << "Чтобы создать ученика для начала зарегистрируйте в системе преподавателя и повторите попытку." << endl;
+				o = 1;
+			}
+			cin.ignore(32767, '\n');
+			switch (o) {
+			case 1: {
+				cout << "__________________________________________" << endl << "Регистрация нового учителя:" << endl;
+				cout << endl << "Придумайте логин: ";
+				getline(cin, _login);
+				cout << endl << "Придумайте пароль: ";
+				getline(cin, _password);
+				cout << endl << "Введите ФИО учителя: ";
+				getline(cin, _FIO);
+				_Class = {};
+				RAU.Th.push_back(Teacher(_password, _login, _FIO, _Class));
+			} break;
+			case 2: {
+				cout << "__________________________________________" << endl << "Регистрация нового ученика:" << endl;
+				cout << endl << "Придумайте логин: ";
+				getline(cin, _login);
+				cout << endl << "Придумайте пароль: ";
+				getline(cin, _password);
+				cout << endl << "Введите ФИО ученика: ";
+				getline(cin, _FIO);
+				marks = {};
+				cout << endl << "Выберите преподавателя: " << endl;
+				for (int i = 0; i < RAU.Th.size(); i++)
+				{
+					cout << i << " -- " << RAU.Th[i].GetFIO() << ";" << endl;
+				}
+				cout << "Введите число: ";
+				cin >> j;
+				cin.ignore(32767, '\n');
+				student* St = new student(_password, _login, _FIO, marks, DZ);
+				RAU.St.push_back(St);
+				RAU.Th[j].change_Class(St);
+			} break;
+			}
+		} break;
+		}
+	}
+}
